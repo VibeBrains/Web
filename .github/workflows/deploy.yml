@@ -50,11 +50,14 @@ jobs:
           chmod 600 ~/.ssh/known_hosts
 
       - name: Выкатить site/
+        # Назначение — `:.`, а не абсолютный путь: forced command на сервере уже запирает
+        # ключ в каталоге сайта и трактует путь относительно него. Абсолютный путь склеился
+        # бы сам с собой (…/var/www/… внутри docroot) и падал на mkdir.
         run: |
           rsync -rltz --delete --itemize-changes \
             --exclude '.DS_Store' \
             -e "ssh -i ~/.ssh/deploy_key -o BatchMode=yes -o UserKnownHostsFile=~/.ssh/known_hosts" \
-            site/ "${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST }}:${{ secrets.DEPLOY_PATH }}/"
+            site/ "${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST }}:."
 
       - name: Проверить, что сайт отвечает
         run: |
