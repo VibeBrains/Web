@@ -56,6 +56,7 @@ jobs:
         run: |
           rsync -rltz --delete --itemize-changes \
             --exclude '.DS_Store' \
+            --exclude '.well-known/' \
             -e "ssh -i ~/.ssh/deploy_key -o BatchMode=yes -o UserKnownHostsFile=~/.ssh/known_hosts" \
             site/ "${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST }}:."
 

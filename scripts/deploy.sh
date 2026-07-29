@@ -39,8 +39,11 @@ say "Выкат $LOCAL_DIR → $HOST_ALIAS:$REMOTE_DIR"
 [[ -n "$DRY" ]] && say "Режим --dry-run: ничего не изменится."
 
 # --delete держит сервер зеркалом каталога site/: удалённый локально файл исчезает и на сервере.
+# Исключение — .well-known/: там живёт то, что кладут мимо репозитория (ACME-челленджи,
+# верификация домена у внешних сервисов). Исключённое из передачи --delete не трогает.
 rsync -az --delete --human-readable --itemize-changes ${DRY:+"$DRY"} \
 	--exclude '.DS_Store' \
+	--exclude '.well-known/' \
 	"$LOCAL_DIR/" "$HOST_ALIAS:$REMOTE_DIR/"
 
 if [[ -z "$DRY" && -n "$SITE_URL" ]]; then
