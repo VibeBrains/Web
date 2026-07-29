@@ -1,0 +1,67 @@
+name: Deploy
+
+# Выкат лендинга на сервер при пуше в main.
+#
+# Ключ деплоя ограничен на стороне сервера forced command'ом (rrsync -wo <docroot>):
+# им нельзя выполнить произвольную команду и нельзя выйти за пределы каталога сайта.
+# Поэтому здесь нет ни одного шага, который что-то запускает на сервере, — только rsync.
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'site/**'
+      - 'scripts/refresh-links.mjs'
+      - '.github/workflows/deploy.yml'
+  # Ссылки на сборки живут в разметке, поэтому после релиза VibeIDE выкат нужен даже
+  # без изменений в репозитории — запускаем руками из вкладки Actions.
+  workflow_dispatch:
+
+concurrency:
+  group: deploy
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: actions/setup-node@v6
+        with:
+          node-version: '22'
+
+      - name: Обновить ссылки на последние сборки
+        # Не критично для выката: если GitHub API недоступен или сработал rate limit,
+        # в разметке остаются ссылки из репозитория — они рабочие, просто не самые свежие.
+        continue-on-error: true
+        run: node scripts/refresh-links.mjs
+
+      - name: Настроить SSH
+        run: |
+          mkdir -p ~/.ssh
+          chmod 700 ~/.ssh
+          printf '%s\n' "${{ secrets.DEPLOY_SSH_KEY }}" > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+          # Хост-ключ зафиксирован секретом, а не ssh-keyscan на лету: скан доверяет
+          # тому, кто ответил, и не защищает от подмены.
+          printf '%s\n' "${{ secrets.DEPLOY_KNOWN_HOSTS }}" > ~/.ssh/known_hosts
+          chmod 600 ~/.ssh/known_hosts
+
+      - name: Выкатить site/
+        run: |
+          rsync -rltz --delete --itemize-changes \
+            --exclude '.DS_Store' \
+            -e "ssh -i ~/.ssh/deploy_key -o BatchMode=yes -o UserKnownHostsFile=~/.ssh/known_hosts" \
+            site/ "${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST }}:${{ secrets.DEPLOY_PATH }}/"
+
+      - name: Проверить, что сайт отвечает
+        run: |
+          url="https://${{ secrets.DEPLOY_HOST }}/"
+          code=$(curl -s -o /dev/null -w '%{http_code}' --max-time 30 "$url")
+          echo "$url → HTTP $code"
+          [ "$code" = "200" ] || exit 1
+          # Страница без разметки — тоже провал выката, поэтому проверяем содержимое.
+          curl -s --max-time 30 "$url" | grep -q 'Скачать для Windows' \
+            || { echo 'На странице нет главной кнопки скачивания'; exit 1; }
