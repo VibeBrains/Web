@@ -703,3 +703,48 @@ p {
 		transition: none;
 	}
 }
+
+/* ---------- first run ---------- */
+
+.first-run {
+	border: 1px solid var(--border);
+	border-radius: var(--radius);
+	padding: 22px 24px 10px;
+	background: var(--bg);
+	margin-bottom: 22px;
+}
+
+.first-run-lede {
+	color: var(--fg-2);
+	font-size: .95rem;
+	max-width: 70ch;
+}
+
+.first-run-cols {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+	gap: 18px 30px;
+	margin-top: 4px;
+}
+
+.first-run-col h4 {
+	margin: 0 0 8px;
+	font-size: 1rem;
+	font-weight: 650;
+}
+
+.first-run-col ol {
+	margin: 0 0 10px;
+	padding-left: 20px;
+	color: var(--fg-2);
+	font-size: .94rem;
+}
+
+.first-run-col li {
+	margin-bottom: 6px;
+}
+
+.first-run-note {
+	color: var(--fg-3);
+	font-size: .88rem;
+}

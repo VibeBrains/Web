@@ -300,6 +300,55 @@
 					</p>
 				</div>
 
+				<div class="first-run" id="first-run">
+					<h3>Первый запуск: система спросит подтверждение</h3>
+					<p class="first-run-lede">
+						Установщик не подписан сертификатом издателя — он платный и привязан к юрлицу.
+						Система сообщает, что не может подтвердить издателя, а не что нашла что-то плохое.
+						Подтвердить нужно один раз.
+					</p>
+
+					<div class="first-run-cols">
+						<div class="first-run-col">
+							<h4>Windows</h4>
+							<ol>
+								<li>В окне SmartScreen нажмите <b>«Подробнее»</b> — сначала видна только кнопка
+									«Не выполнять».</li>
+								<li>Нажмите <b>«Выполнить в любом случае»</b>.</li>
+							</ol>
+							<p class="first-run-note">
+								Или поставьте из каталога Microsoft, без предупреждений:
+								<code class="copy" data-copy="winget install VibeBrains.VibeIDE" tabindex="0"
+									role="button" title="Скопировать">winget install VibeBrains.VibeIDE</code>
+							</p>
+						</div>
+
+						<div class="first-run-col">
+							<h4>macOS 15 (Sequoia) и новее</h4>
+							<ol>
+								<li>Перетащите приложение в <b>Программы</b> и запустите. Появится окно
+									«Файл “VibeIDE.app” не был открыт» — нажмите <b>«Готово»</b>. Этот шаг
+									обязателен: без попытки запуска нужная кнопка не появится.</li>
+								<li>Откройте <b>Системные настройки → Конфиденциальность и безопасность</b>,
+									прокрутите до раздела «Безопасность» и нажмите <b>«Открыть всё равно»</b>.</li>
+								<li>Подтвердите Touch ID или паролем и запустите VibeIDE ещё раз — теперь
+									в диалоге будет кнопка <b>«Открыть»</b>.</li>
+							</ol>
+							<p class="first-run-note">
+								Control-клик → «Открыть» в этих версиях уже не помогает: Apple убрала такой обход
+								начиная с Sequoia. На macOS 14 и старше он ещё работает.
+							</p>
+						</div>
+					</div>
+
+					<p class="first-run-note">
+						Способ через терминал (<code>xattr -dr com.apple.quarantine</code>) и сверка контрольной
+						суммы —
+						<a href="https://github.com/VibeBrains/VibeIDE/blob/main/docs/manuals/firstRun.md"
+							rel="noopener">в инструкции по первому запуску</a>.
+					</p>
+				</div>
+
 				<div class="honesty">
 					<h3>Честно о платформах</h3>
 					<p>
@@ -307,8 +356,6 @@
 						отличаться: мы выпускаем исправление там, где оно нужно, не дожидаясь общего релиза.
 						Linux собирается из исходников; готовые пакеты в работе —
 						<a href="https://github.com/VibeBrains/VibeIDE/issues" rel="noopener">следите за issues</a>.
-						Установщик не подписан сертификатом издателя: Windows покажет SmartScreen,
-						macOS попросит «Open Anyway» при первом запуске.
 					</p>
 				</div>
 			</div>
