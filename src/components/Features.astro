@@ -1,0 +1,320 @@
+---
+import Lines from './Lines.astro'
+import type { Lang } from '../config/languages'
+import { useTranslations, type Key } from '../i18n'
+
+interface Props {
+  lang: Lang
+}
+
+const { lang } = Astro.props
+const { t } = useTranslations(lang)
+
+/** A card's motif: a small looping figure for the wide cards, an icon for the rest */
+type Motif = 'autopilot' | 'tokens' | 'voice' | 'preview' | 'spec' | 'watch' | 'privacy' | 'compat'
+
+const cards: readonly { title: Key; text: Key; motif: Motif; wide?: boolean }[] = [
+  { title: 'features.autopilot.title', text: 'features.autopilot.text', motif: 'autopilot', wide: true },
+  { title: 'features.tokens.title', text: 'features.tokens.text', motif: 'tokens', wide: true },
+  { title: 'features.voice.title', text: 'features.voice.text', motif: 'voice' },
+  { title: 'features.preview.title', text: 'features.preview.text', motif: 'preview' },
+  { title: 'features.spec.title', text: 'features.spec.text', motif: 'spec' },
+  { title: 'features.watch.title', text: 'features.watch.text', motif: 'watch' },
+  { title: 'features.privacy.title', text: 'features.privacy.text', motif: 'privacy' },
+  { title: 'features.compat.title', text: 'features.compat.text', motif: 'compat' },
+]
+
+// Icons are stroke drawings in a 24-unit box
+const ICONS: Record<Motif, string> = {
+  autopilot: 'M12 3v3M12 18v3M3 12h3M18 12h3M6 6l2 2M16 16l2 2M6 18l2-2M16 8l2-2M12 9a3 3 0 1 0 0 6 3 3 0 0 0 0-6Z',
+  tokens: 'M4 7h16M4 12h10M4 17h6M17 14l3 3-3 3',
+  voice: 'M12 3a3 3 0 0 0-3 3v6a3 3 0 0 0 6 0V6a3 3 0 0 0-3-3ZM5 11a7 7 0 0 0 14 0M12 18v3',
+  preview: 'M3 5h18v12H3ZM8 21h8M12 17v4M7 9l3 3-3 3',
+  spec: 'M7 3h7l5 5v13H7ZM14 3v5h5M10 13h6M10 17h4',
+  watch: 'M3 6h14v12H3ZM17 10l4-2v8l-4-2',
+  privacy: 'M12 3 4 6v6c0 4.5 3.4 8.3 8 9 4.6-.7 8-4.5 8-9V6ZM9 12l2 2 4-4',
+  compat: 'M8 7 3 12l5 5M16 7l5 5-5 5M14 4l-4 16',
+}
+
+const WAVE_BARS = 18
+---
+
+<section class="section features" id="features">
+  <div class="container">
+    <div class="section-head section-head--center">
+      <p class="eyebrow" data-reveal>{t('features.eyebrow')}</p>
+      <h2 class="section-title" data-reveal style="--reveal-i: 1">{t('features.title')}</h2>
+      <p class="section-lead" data-reveal style="--reveal-i: 2"><Lines text={t('features.lead')} /></p>
+    </div>
+
+    <div class="grid">
+      {
+        cards.map((card, i) => (
+          <article class:list={['card', { 'card--wide': card.wide }]} data-reveal style={`--reveal-i: ${i % 4}`}>
+            <div class="card-inner" data-tilt-card data-play>
+              <span class="glare" aria-hidden="true" />
+              <span class="icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" width="22" height="22">
+                  <path d={ICONS[card.motif]} />
+                </svg>
+              </span>
+              <h3 class="card-title">{t(card.title)}</h3>
+              <p class="card-text">
+                <Lines text={t(card.text)} />
+              </p>
+              {card.motif === 'autopilot' && (
+                <span class="figure figure--orbit" aria-hidden="true">
+                  <span class="orb orb--1" />
+                  <span class="orb orb--2" />
+                  <span class="orb orb--3" />
+                </span>
+              )}
+              {card.motif === 'tokens' && (
+                <span class="figure figure--tokens" aria-hidden="true">
+                  <span class="tok tok--in" />
+                  <span class="tok tok--out" />
+                </span>
+              )}
+              {card.motif === 'voice' && (
+                <span class="figure figure--wave" aria-hidden="true">
+                  {Array.from({ length: WAVE_BARS }, (_, b) => (
+                    <span style={`--b: ${b}`} />
+                  ))}
+                </span>
+              )}
+            </div>
+          </article>
+        ))
+      }
+    </div>
+  </div>
+</section>
+
+<style>
+  .grid {
+    display: grid;
+    gap: 16px;
+  }
+
+  @media (min-width: 720px) {
+    .grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  @media (min-width: 1040px) {
+    .grid {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+
+    .card--wide {
+      grid-column: span 2;
+    }
+  }
+
+  .card {
+    perspective: 900px;
+  }
+
+  .card-inner {
+    --tx: 0deg;
+    --ty: 0deg;
+    position: relative;
+    display: grid;
+    align-content: start;
+    gap: 12px;
+    height: 100%;
+    padding: 24px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    background: linear-gradient(180deg, var(--surface-2), var(--surface));
+    overflow: hidden;
+    transform: rotateX(var(--tx)) rotateY(var(--ty));
+    transform-style: preserve-3d;
+    transition:
+      transform 0.4s var(--ease-out),
+      border-color 0.3s;
+  }
+
+  .card-inner:hover {
+    border-color: rgb(63 199 194 / 0.35);
+  }
+
+  .glare {
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(360px circle at var(--mx, 50%) var(--my, 0%), rgb(63 199 194 / 0.12), transparent 60%);
+    opacity: 0;
+    transition: opacity 0.3s;
+    pointer-events: none;
+  }
+
+  .card-inner:hover .glare {
+    opacity: 1;
+  }
+
+  .icon {
+    display: grid;
+    place-items: center;
+    width: 42px;
+    height: 42px;
+    border-radius: 12px;
+    background: linear-gradient(135deg, rgb(63 199 194 / 0.18), rgb(177 60 192 / 0.18));
+    transform: translateZ(30px);
+  }
+
+  .icon path {
+    fill: none;
+    stroke: var(--brand-bright);
+    stroke-width: 1.8;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  .card-title {
+    font-size: 20px;
+    transform: translateZ(20px);
+  }
+
+  .card-text {
+    display: grid;
+    gap: 4px;
+    color: var(--fg-muted);
+    font-size: 15px;
+    transform: translateZ(10px);
+  }
+
+  .figure {
+    position: absolute;
+    right: 18px;
+    top: 18px;
+  }
+
+  .figure--orbit {
+    width: 64px;
+    height: 64px;
+    border: 1px dashed rgb(63 199 194 / 0.35);
+    border-radius: 50%;
+  }
+
+  .orb {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 10px;
+    height: 10px;
+    margin: -5px;
+    border-radius: 50%;
+    background: var(--teal);
+    box-shadow: 0 0 12px var(--teal);
+    transform: rotate(var(--a, 0deg)) translateX(32px);
+  }
+
+  .orb--2 {
+    --a: 120deg;
+    background: var(--magenta-bright);
+    box-shadow: 0 0 12px var(--magenta);
+  }
+
+  .orb--3 {
+    --a: 240deg;
+    background: #fff;
+    box-shadow: 0 0 12px #fff;
+  }
+
+  .figure--tokens {
+    display: grid;
+    gap: 6px;
+    width: 96px;
+  }
+
+  .tok {
+    height: 8px;
+    border-radius: 4px;
+  }
+
+  .tok--in {
+    width: 100%;
+    background: rgb(255 255 255 / 0.18);
+  }
+
+  .tok--out {
+    width: 62%;
+    background: var(--gradient);
+  }
+
+  /* In a narrow card the wave sits under the text: in the corner it would run into the title */
+  .figure--wave {
+    position: static;
+    margin-top: 6px;
+    display: flex;
+    align-items: center;
+    gap: 3px;
+    height: 36px;
+  }
+
+  .figure--wave span {
+    width: 3px;
+    height: 30%;
+    border-radius: 2px;
+    background: var(--gradient);
+  }
+
+  @media (min-width: 1040px) {
+    .card--wide .card-text {
+      padding-right: 110px;
+    }
+  }
+
+  @media (max-width: 520px) {
+    .figure--orbit,
+    .figure--tokens {
+      display: none;
+    }
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .card-inner.is-playing .orb {
+      animation: orbit 5s linear infinite;
+    }
+
+    .card-inner.is-playing .tok--out {
+      animation: squeeze 4s var(--ease-out) infinite;
+    }
+
+    .card-inner.is-playing .figure--wave span {
+      animation: wave 1.2s ease-in-out infinite;
+      animation-delay: calc(var(--b) * -0.11s);
+    }
+  }
+
+  @keyframes orbit {
+    from {
+      transform: rotate(var(--a, 0deg)) translateX(32px);
+    }
+    to {
+      transform: rotate(calc(var(--a, 0deg) + 360deg)) translateX(32px);
+    }
+  }
+
+  @keyframes squeeze {
+    0%,
+    15% {
+      width: 100%;
+    }
+    60%,
+    100% {
+      width: 62%;
+    }
+  }
+
+  @keyframes wave {
+    0%,
+    100% {
+      height: 20%;
+    }
+    50% {
+      height: 100%;
+    }
+  }
+</style>

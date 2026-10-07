@@ -1,0 +1,67 @@
+---
+import type { Lang } from '../config/languages'
+import { useTranslations, type Key } from '../i18n'
+
+interface Props {
+  lang: Lang
+}
+
+const { lang } = Astro.props
+const { t } = useTranslations(lang)
+
+const facts: readonly { value: Key; text: Key }[] = [
+  { value: 'facts.free.value', text: 'facts.free.text' },
+  { value: 'facts.telemetry.value', text: 'facts.telemetry.text' },
+  { value: 'facts.models.value', text: 'facts.models.text' },
+]
+---
+
+<section class="facts" aria-label={t('facts.aria')}>
+  <div class="container facts-row">
+    {
+      facts.map((fact, i) => (
+        <div class="fact" data-reveal style={`--reveal-i: ${i}`}>
+          <p class="fact-value gradient-text">{t(fact.value)}</p>
+          <p class="fact-text">{t(fact.text)}</p>
+        </div>
+      ))
+    }
+  </div>
+</section>
+
+<style>
+  .facts {
+    border-block: 1px solid var(--border);
+    background: var(--bg-soft);
+  }
+
+  .facts-row {
+    display: grid;
+    gap: 28px;
+    padding-block: 40px;
+  }
+
+  @media (min-width: 800px) {
+    .facts-row {
+      grid-template-columns: repeat(3, 1fr);
+      gap: 40px;
+    }
+  }
+
+  .fact {
+    display: grid;
+    gap: 6px;
+  }
+
+  .fact-value {
+    font-family: var(--font-title);
+    font-size: clamp(28px, 3.4vw, 38px);
+    font-weight: 700;
+    line-height: 1.1;
+  }
+
+  .fact-text {
+    color: var(--fg-muted);
+    font-size: 15px;
+  }
+</style>

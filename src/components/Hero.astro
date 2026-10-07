@@ -1,0 +1,698 @@
+---
+import Lines from './Lines.astro'
+import Mark from './Mark.astro'
+import Copy from './Copy.astro'
+import DownloadButtons from './DownloadButtons.astro'
+import { langTags, type Lang } from '../config/languages'
+import { WINGET_COMMAND } from '../config/site'
+import { buildReleases } from '../config/build'
+import { useTranslations, type Key } from '../i18n'
+
+interface Props {
+  lang: Lang
+}
+
+const { lang } = Astro.props
+const { t } = useTranslations(lang)
+
+// The letter a word turns inside out: the first of these it holds, widest counters first — a narrow letter in a plate
+// reads as a bar. A one-letter word keeps its letter: a whole word in a plate is a square, not a word
+const PLATE_LETTERS = 'АОДРВБСМAODRBCM'
+const plated = (word: string) => {
+  if (word.length < 2) {
+    return { before: word, letter: '', after: '' }
+  }
+  const upper = word.toLocaleUpperCase(lang)
+  const at = [...PLATE_LETTERS].map((letter) => upper.indexOf(letter)).find((index) => index >= 0) ?? -1
+  return at < 0
+    ? { before: word, letter: '', after: '' }
+    : { before: word.slice(0, at), letter: word[at], after: word.slice(at + 1) }
+}
+const accentWords = t('hero.titleAccent').split(' ').map(plated)
+
+const latest = buildReleases[0]
+const dateOf = (iso: string) =>
+  new Intl.DateTimeFormat(langTags[lang], { day: 'numeric', month: 'long', year: 'numeric' }).format(new Date(iso))
+
+// Code lines of the editor window are drawn as bars: widths in percent and the indent level of each line
+const codeLines: readonly { w: number; indent: number; tone: 'a' | 'b' | 'c' }[] = [
+  { w: 46, indent: 0, tone: 'a' },
+  { w: 62, indent: 1, tone: 'b' },
+  { w: 38, indent: 2, tone: 'c' },
+  { w: 54, indent: 2, tone: 'b' },
+  { w: 30, indent: 1, tone: 'a' },
+  { w: 0, indent: 0, tone: 'a' },
+  { w: 58, indent: 0, tone: 'c' },
+  { w: 44, indent: 1, tone: 'b' },
+  { w: 66, indent: 2, tone: 'a' },
+  { w: 26, indent: 1, tone: 'c' },
+  { w: 34, indent: 0, tone: 'b' },
+]
+
+const steps: readonly Key[] = ['hero.ide.step1', 'hero.ide.step2', 'hero.ide.step3', 'hero.ide.step4']
+---
+
+<section class="hero">
+  <div class="hero-glow" aria-hidden="true"></div>
+  <div class="hero-grid-bg" aria-hidden="true"></div>
+  <div class="container hero-row">
+    <div class="hero-copy">
+      <p class="eyebrow" data-reveal>{t('hero.eyebrow')}</p>
+      <h1 class="hero-title" data-reveal style="--reveal-i: 1">
+        <span class="ln">{t('hero.title')}</span>
+        <span class="ln hero-accent fused" data-fused aria-label={t('hero.titleAccent')}>
+          {
+            accentWords.map((word, index) => (
+              <>
+                {index > 0 && ' '}
+                <span class="word" aria-hidden="true">
+                  {word.before}
+                  {word.letter && <span class="plate">{word.letter}</span>}
+                  {word.after}
+                </span>
+              </>
+            ))
+          }
+        </span>
+      </h1>
+      <p class="hero-lead" data-reveal style="--reveal-i: 2">
+        <Lines text={t('hero.lead')} />
+      </p>
+      <div class="hero-cta" id="download" data-reveal style="--reveal-i: 3">
+        <DownloadButtons lang={lang} />
+        <p class="hero-or">
+          <span>{t('hero.or')}</span>
+          <Copy lang={lang} command={WINGET_COMMAND} />
+        </p>
+      </div>
+      <p class="hero-note" data-reveal style="--reveal-i: 4">
+        {t('hero.note').split('\n').map((line) => <span>{line}</span>)}
+      </p>
+      {
+        latest && (
+          <p
+            class="hero-version"
+            data-reveal
+            style="--reveal-i: 5"
+            data-version
+            data-template={t('hero.version')}
+          >
+            {t('hero.version', { version: latest.tag_name, date: dateOf(latest.published_at) })}
+          </p>
+        )
+      }
+    </div>
+
+    <div class="hero-visual" data-reveal style="--reveal-i: 2">
+      <div class="stage" data-tilt-stage data-play>
+        <div class="scene" data-tilt role="img" aria-label={t('hero.ide.aria')}>
+          <div class="layer layer--window" aria-hidden="true">
+            <div class="window">
+              <div class="window-bar">
+                <span class="dots"><i></i><i></i><i></i></span>
+                <span class="tab tab--active">{t('hero.ide.file1')}</span>
+                <span class="tab">{t('hero.ide.file2')}</span>
+              </div>
+              <div class="window-body">
+                <ol class="code">
+                  {
+                    codeLines.map((line, i) => (
+                      <li style={`--w: ${line.w}%; --indent: ${line.indent}; --i: ${i}`} class={`tone-${line.tone}`}>
+                        <span class="num">{i + 1}</span>
+                        <span class="bar" />
+                      </li>
+                    ))
+                  }
+                </ol>
+                <div class="chat">
+                  <span class="chat-title">{t('hero.ide.chat')}</span>
+                  <span class="bubble">{t('hero.ide.ask')}</span>
+                  <ul class="steps">
+                    {
+                      steps.map((step, i) => (
+                        <li style={`--i: ${i}`}>
+                          <span class="tick" />
+                          {t(step)}
+                        </li>
+                      ))
+                    }
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="layer layer--autopilot" aria-hidden="true">
+            <span class="chip chip--autopilot"><span class="spinner"></span>{t('hero.ide.autopilot')}</span>
+          </div>
+          <div class="layer layer--tests" aria-hidden="true">
+            <span class="chip chip--tests"><span class="ok">✓</span>{t('hero.ide.terminal')}</span>
+          </div>
+          <div class="layer layer--tokens" aria-hidden="true">
+            <span class="chip chip--tokens">
+              <span>{t('hero.ide.tokens')}</span>
+              <span class="meter"><span></span></span>
+            </span>
+          </div>
+          <div class="layer layer--mark" aria-hidden="true">
+            <span class="float-mark"><Mark size={84} animated /></span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .hero {
+    position: relative;
+    padding-block: 80px 104px;
+    overflow: hidden;
+  }
+
+  .hero-glow {
+    position: absolute;
+    inset: -30% -10% auto 30%;
+    height: 820px;
+    background:
+      radial-gradient(closest-side at 40% 45%, rgb(63 199 194 / 0.26), transparent 70%),
+      radial-gradient(closest-side at 70% 60%, rgb(177 60 192 / 0.24), transparent 70%);
+    filter: blur(24px);
+    pointer-events: none;
+  }
+
+  .hero-grid-bg {
+    position: absolute;
+    inset: 0;
+    background-image:
+      linear-gradient(rgb(255 255 255 / 0.035) 1px, transparent 1px),
+      linear-gradient(90deg, rgb(255 255 255 / 0.035) 1px, transparent 1px);
+    background-size: 48px 48px;
+    mask-image: radial-gradient(ellipse 70% 60% at 60% 30%, #000 20%, transparent 75%);
+    pointer-events: none;
+  }
+
+  .hero-row {
+    position: relative;
+    display: grid;
+    gap: 56px;
+    align-items: center;
+  }
+
+  @media (min-width: 1040px) {
+    .hero-row {
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+      gap: 48px;
+    }
+  }
+
+  .hero-copy {
+    display: grid;
+    gap: 24px;
+    justify-items: start;
+    min-width: 0;
+  }
+
+  .hero-title {
+    font-size: clamp(36px, 5vw, 58px);
+    line-height: 1.05;
+  }
+
+  .hero-accent {
+    background: linear-gradient(92deg, var(--teal), #b6f2ef 45%, var(--magenta-bright));
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+
+  /*
+   * The fused line: heavy condensed capitals set so tight they touch, and in each word one letter turned inside out —
+   * a plate of the line's paint with the letter cut out. One such line a page: a spice, not the dish
+   */
+  .fused {
+    display: block;
+    margin-top: 0.08em;
+    font-family: var(--font-fused);
+    font-weight: 400;
+    font-size: 1.22em;
+    line-height: 0.9;
+    letter-spacing: -0.045em;
+    text-transform: uppercase;
+  }
+
+  .fused .word {
+    white-space: nowrap;
+  }
+
+  .fused .plate {
+    display: inline-block;
+    margin: 0 0.01em;
+    padding: 0.06em 0.03em 0;
+    line-height: 0.86;
+    background: linear-gradient(180deg, #b6f2ef, var(--teal));
+    color: var(--bg);
+    -webkit-text-fill-color: var(--bg);
+  }
+
+  .hero-lead {
+    max-width: 600px;
+    color: var(--fg-muted);
+    font-size: 18px;
+    display: grid;
+    gap: 6px;
+  }
+
+  .hero-cta {
+    display: grid;
+    gap: 16px;
+    max-width: 100%;
+  }
+
+  .hero-or {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 10px 12px;
+    color: var(--fg-faint);
+    font-size: 14px;
+    min-width: 0;
+  }
+
+  .hero-note {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px 18px;
+    color: var(--fg-faint);
+    font-family: var(--font-accent);
+    font-size: 13px;
+  }
+
+  .hero-note span::before {
+    content: '✓';
+    margin-right: 8px;
+    color: var(--success);
+  }
+
+  .hero-version {
+    color: var(--fg-faint);
+    font-family: var(--font-accent);
+    font-size: 13px;
+  }
+
+  /* ---------- the 3D window ---------- */
+
+  .hero-visual {
+    min-width: 0;
+  }
+
+  .stage {
+    perspective: 1400px;
+    perspective-origin: 50% 40%;
+    padding: 40px 12px 56px;
+  }
+
+  .scene {
+    --rx: 10deg;
+    --ry: -16deg;
+    position: relative;
+    transform-style: preserve-3d;
+    transform: rotateX(var(--rx)) rotateY(var(--ry));
+    transition: transform 0.6s var(--ease-out);
+  }
+
+  .layer {
+    transform-style: preserve-3d;
+  }
+
+  .layer--window {
+    transform: translateZ(0);
+  }
+
+  .window {
+    border: 1px solid var(--border-strong);
+    border-radius: var(--radius-lg);
+    background: linear-gradient(180deg, rgb(24 24 27 / 0.96), rgb(15 15 19 / 0.96));
+    box-shadow:
+      0 40px 90px -30px rgb(0 0 0 / 0.85),
+      0 0 0 1px rgb(63 199 194 / 0.08),
+      0 0 90px -24px var(--brand-glow),
+      40px 0 90px -40px var(--magenta-glow);
+    overflow: hidden;
+  }
+
+  .window-bar {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 10px 14px;
+    border-bottom: 1px solid var(--border);
+    font-family: var(--font-accent);
+    font-size: 12px;
+  }
+
+  .dots {
+    display: inline-flex;
+    gap: 6px;
+    margin-right: 10px;
+  }
+
+  .dots i {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: var(--surface-3);
+  }
+
+  .dots i:first-child {
+    background: #f87171;
+  }
+
+  .dots i:nth-child(2) {
+    background: #fbbf24;
+  }
+
+  .dots i:nth-child(3) {
+    background: #4ade80;
+  }
+
+  .tab {
+    padding: 4px 10px;
+    border-radius: 6px;
+    color: var(--fg-faint);
+  }
+
+  .tab--active {
+    background: var(--surface-3);
+    color: var(--fg);
+  }
+
+  .window-body {
+    display: grid;
+    grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr);
+    min-height: 300px;
+  }
+
+  .code {
+    display: grid;
+    align-content: start;
+    gap: 9px;
+    padding: 16px 14px;
+  }
+
+  .code li {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    height: 12px;
+  }
+
+  .num {
+    width: 14px;
+    color: var(--fg-faint);
+    font-family: var(--font-accent);
+    font-size: 10px;
+    text-align: right;
+  }
+
+  .bar {
+    width: var(--w);
+    height: 7px;
+    margin-left: calc(var(--indent) * 16px);
+    border-radius: 4px;
+    background: var(--surface-3);
+  }
+
+  .tone-a .bar {
+    background: linear-gradient(90deg, rgb(63 199 194 / 0.7), rgb(63 199 194 / 0.25));
+  }
+
+  .tone-b .bar {
+    background: linear-gradient(90deg, rgb(224 124 240 / 0.6), rgb(224 124 240 / 0.2));
+  }
+
+  .tone-c .bar {
+    background: linear-gradient(90deg, rgb(255 255 255 / 0.32), rgb(255 255 255 / 0.1));
+  }
+
+  .chat {
+    display: grid;
+    align-content: start;
+    gap: 10px;
+    padding: 14px;
+    border-left: 1px solid var(--border);
+    background: rgb(255 255 255 / 0.015);
+    font-size: 12px;
+    line-height: 1.4;
+  }
+
+  .chat-title {
+    color: var(--fg-faint);
+    font-family: var(--font-accent);
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .bubble {
+    justify-self: end;
+    padding: 8px 10px;
+    border-radius: 10px 10px 2px 10px;
+    background: var(--brand-soft);
+    color: var(--fg);
+  }
+
+  .steps {
+    display: grid;
+    gap: 8px;
+  }
+
+  .steps li {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--fg-soft);
+  }
+
+  .tick {
+    flex: none;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: var(--success);
+    box-shadow: inset 0 0 0 3px rgb(9 9 11 / 0.55);
+  }
+
+  .layer--autopilot,
+  .layer--tests,
+  .layer--tokens,
+  .layer--mark {
+    position: absolute;
+  }
+
+  .layer--autopilot {
+    top: -18px;
+    left: 28%;
+    transform: translateZ(120px);
+  }
+
+  .layer--tests {
+    bottom: -22px;
+    left: -14px;
+    transform: translateZ(150px);
+  }
+
+  .layer--tokens {
+    right: -18px;
+    bottom: 22%;
+    transform: translateZ(90px);
+  }
+
+  .layer--mark {
+    top: -44px;
+    right: -20px;
+    transform: translateZ(190px);
+  }
+
+  .chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 14px;
+    border: 1px solid var(--border-strong);
+    border-radius: 999px;
+    background: rgb(19 19 23 / 0.92);
+    color: var(--fg);
+    font-family: var(--font-accent);
+    font-size: 12px;
+    white-space: nowrap;
+    box-shadow: 0 18px 40px -16px rgb(0 0 0 / 0.9);
+    backdrop-filter: blur(8px);
+  }
+
+  .chip--autopilot {
+    border-color: rgb(63 199 194 / 0.45);
+    color: var(--brand-bright);
+  }
+
+  .spinner {
+    width: 12px;
+    height: 12px;
+    border: 2px solid rgb(95 224 218 / 0.3);
+    border-top-color: var(--brand-bright);
+    border-radius: 50%;
+  }
+
+  .chip--tests {
+    border-color: rgb(74 222 128 / 0.4);
+  }
+
+  .ok {
+    color: var(--success);
+  }
+
+  .chip--tokens {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 6px;
+    border-radius: 14px;
+    border-color: rgb(224 124 240 / 0.4);
+  }
+
+  .meter {
+    height: 5px;
+    border-radius: 3px;
+    background: var(--surface-3);
+    overflow: hidden;
+  }
+
+  .meter span {
+    display: block;
+    width: 62%;
+    height: 100%;
+    border-radius: inherit;
+    background: var(--gradient);
+  }
+
+  .float-mark {
+    display: block;
+    filter: drop-shadow(0 18px 30px rgb(177 60 192 / 0.45)) drop-shadow(0 0 24px rgb(63 199 194 / 0.35));
+  }
+
+  @media (max-width: 640px) {
+    .window-body {
+      grid-template-columns: 1fr;
+    }
+
+    .code {
+      display: none;
+    }
+
+    .chat {
+      border-left: 0;
+    }
+
+    .layer--tokens {
+      display: none;
+    }
+
+    .layer--mark {
+      right: -6px;
+    }
+
+    .layer--tests {
+      left: 8px;
+    }
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .spinner {
+      animation: spin 1s linear infinite;
+    }
+
+    .float-mark {
+      animation: float 6s ease-in-out infinite;
+    }
+
+    .chip {
+      animation: float 7s ease-in-out infinite;
+    }
+
+    .layer--tests .chip {
+      animation-delay: -2s;
+    }
+
+    .layer--tokens .chip {
+      animation-delay: -4s;
+    }
+
+    /* The agent's story loops while the window is on screen: code is typed, steps tick, the meter fills */
+    .stage.is-playing .bar {
+      animation: type 9s var(--ease-out) infinite backwards;
+      animation-delay: calc(var(--i) * 0.18s);
+    }
+
+    .stage.is-playing .steps li {
+      animation: step 9s ease-out infinite backwards;
+      animation-delay: calc(0.8s + var(--i) * 1.3s);
+    }
+
+    .stage.is-playing .meter span {
+      animation: meter 9s var(--ease-out) infinite;
+    }
+  }
+
+  @keyframes spin {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+
+  @keyframes float {
+    0%,
+    100% {
+      translate: 0 0;
+    }
+    50% {
+      translate: 0 -10px;
+    }
+  }
+
+  @keyframes type {
+    0% {
+      clip-path: inset(0 100% 0 0);
+    }
+    18%,
+    92% {
+      clip-path: inset(0 0 0 0);
+    }
+    100% {
+      clip-path: inset(0 100% 0 0);
+    }
+  }
+
+  @keyframes step {
+    0% {
+      opacity: 0;
+      transform: translateX(-8px);
+    }
+    6%,
+    86% {
+      opacity: 1;
+      transform: none;
+    }
+    100% {
+      opacity: 0;
+    }
+  }
+
+  @keyframes meter {
+    0%,
+    20% {
+      width: 4%;
+    }
+    70%,
+    100% {
+      width: 62%;
+    }
+  }
+</style>

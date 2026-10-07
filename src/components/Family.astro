@@ -1,0 +1,166 @@
+---
+import Lines from './Lines.astro'
+import Mark from './Mark.astro'
+import type { Lang } from '../config/languages'
+import { links, siblings } from '../config/site'
+import { useTranslations } from '../i18n'
+
+interface Props {
+  lang: Lang
+}
+
+const { lang } = Astro.props
+const { t } = useTranslations(lang)
+---
+
+<section class="section family">
+  <div class="container">
+    <div class="section-head section-head--center">
+      <p class="eyebrow" data-reveal>{t('family.eyebrow')}</p>
+      <h2 class="section-title" data-reveal style="--reveal-i: 1"><Lines text={t('family.title')} /></h2>
+      <p class="section-lead" data-reveal style="--reveal-i: 2"><Lines text={t('family.lead')} /></p>
+    </div>
+
+    <div class="products">
+      <div class="product product--here" data-reveal style="--reveal-i: 0">
+        <div class="product-inner" data-tilt-card>
+          <span class="badge">{t('family.here')}</span>
+          <span class="product-mark"><Mark size={56} animated /></span>
+          <h3>{t('brand')}</h3>
+          <p>{t('family.vibeide')}</p>
+        </div>
+      </div>
+
+      <a class="product" href={links.vibeidea} rel="noopener" data-reveal style="--reveal-i: 1">
+        <span class="product-inner" data-tilt-card>
+          <span class="product-mark" aria-hidden="true">
+            <svg width="56" height="56" viewBox="-80 -80 160 160">
+              <rect x="-80" y="-80" width="160" height="160" rx="34" fill="#18181b" />
+              <path d="M-14-42-50 0-14 42" fill="none" stroke="#b13cc0" stroke-width="16" stroke-linecap="round" stroke-linejoin="round" />
+              <path d="M14-42 50 0 14 42" fill="none" stroke="#ff8a3d" stroke-width="16" stroke-linecap="round" stroke-linejoin="round" />
+              <circle r="9" fill="#f4f4f5" />
+            </svg>
+          </span>
+          <span class="product-name">{siblings.vibeidea}</span>
+          <span class="product-text">{t('family.vibeidea')}</span>
+          <span class="product-open">{t('family.open')}</span>
+        </span>
+      </a>
+
+      <a class="product" href={links.vibememory} rel="noopener" data-reveal style="--reveal-i: 2">
+        <span class="product-inner" data-tilt-card>
+          <span class="product-mark" aria-hidden="true">
+            <svg width="56" height="56" viewBox="0 0 32 32">
+              <rect width="32" height="32" rx="7" fill="#2e5be4" />
+              <g fill="none" stroke="#eff6ff" stroke-width="4" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M24 24V8l-8 10" stroke-opacity=".5" />
+                <path d="M8 24V8l8 10" />
+              </g>
+              <circle cx="16" cy="21" r="5.5" fill="#2e5be4" />
+              <circle cx="16" cy="21" r="4.5" fill="#eff6ff" />
+            </svg>
+          </span>
+          <span class="product-name">{siblings.vibememory}</span>
+          <span class="product-text">{t('family.vibememory')}</span>
+          <span class="product-open">{t('family.open')}</span>
+        </span>
+      </a>
+    </div>
+  </div>
+</section>
+
+<style>
+  .products {
+    display: grid;
+    gap: 16px;
+  }
+
+  @media (min-width: 860px) {
+    .products {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+  }
+
+  .product {
+    perspective: 900px;
+    color: inherit;
+  }
+
+  .product:hover {
+    color: inherit;
+  }
+
+  .product-inner {
+    --tx: 0deg;
+    --ty: 0deg;
+    position: relative;
+    display: grid;
+    gap: 10px;
+    height: 100%;
+    padding: 28px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    background: linear-gradient(180deg, var(--surface-2), var(--surface));
+    transform: rotateX(var(--tx)) rotateY(var(--ty));
+    transform-style: preserve-3d;
+    transition:
+      transform 0.4s var(--ease-out),
+      border-color 0.3s;
+  }
+
+  .product--here .product-inner {
+    border-color: rgb(63 199 194 / 0.4);
+    background:
+      linear-gradient(180deg, rgb(63 199 194 / 0.08), rgb(177 60 192 / 0.06)),
+      linear-gradient(180deg, var(--surface-2), var(--surface));
+  }
+
+  a.product:hover .product-inner {
+    border-color: var(--border-strong);
+  }
+
+  .product-mark {
+    display: block;
+    transform: translateZ(40px);
+    filter: drop-shadow(0 12px 22px rgb(0 0 0 / 0.5));
+  }
+
+  h3,
+  .product-name {
+    color: var(--fg);
+    font-family: var(--font-accent);
+    font-size: 20px;
+    font-weight: 700;
+    transform: translateZ(24px);
+  }
+
+  .product-inner p,
+  .product-text {
+    color: var(--fg-muted);
+    font-size: 15px;
+    transform: translateZ(12px);
+  }
+
+  .product-open {
+    margin-top: 4px;
+    color: var(--brand-bright);
+    font-size: 15px;
+    font-weight: 600;
+  }
+
+  .product-open::after {
+    content: ' →';
+  }
+
+  .badge {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    padding: 3px 10px;
+    border-radius: 999px;
+    background: var(--brand-soft);
+    color: var(--brand-bright);
+    font-family: var(--font-accent);
+    font-size: 12px;
+  }
+</style>

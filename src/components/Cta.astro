@@ -1,0 +1,66 @@
+---
+import Lines from './Lines.astro'
+import Mark from './Mark.astro'
+import DownloadButtons from './DownloadButtons.astro'
+import type { Lang } from '../config/languages'
+import { links } from '../config/site'
+import { useTranslations } from '../i18n'
+
+interface Props {
+  lang: Lang
+}
+
+const { lang } = Astro.props
+const { t } = useTranslations(lang)
+---
+
+<section class="section cta">
+  <div class="cta-glow" aria-hidden="true"></div>
+  <div class="container cta-box" data-reveal>
+    <span class="cta-mark"><Mark size={64} animated /></span>
+    <h2 class="section-title">{t('cta.title')}</h2>
+    <p class="section-lead"><Lines text={t('cta.lead')} /></p>
+    <DownloadButtons lang={lang} />
+    <a class="source" href={links.github} rel="noopener">{t('cta.source')}</a>
+  </div>
+</section>
+
+<style>
+  .cta {
+    overflow: hidden;
+  }
+
+  .cta-glow {
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(closest-side at 35% 50%, rgb(63 199 194 / 0.18), transparent 70%),
+      radial-gradient(closest-side at 65% 50%, rgb(177 60 192 / 0.18), transparent 70%);
+    pointer-events: none;
+  }
+
+  .cta-box {
+    position: relative;
+    display: grid;
+    justify-items: center;
+    gap: 20px;
+    text-align: center;
+  }
+
+  .cta-box :global(.downloads) {
+    justify-content: center;
+  }
+
+  .section-lead {
+    display: grid;
+    gap: 4px;
+  }
+
+  .cta-mark {
+    filter: drop-shadow(0 0 30px rgb(63 199 194 / 0.45));
+  }
+
+  .source {
+    font-weight: 500;
+  }
+</style>

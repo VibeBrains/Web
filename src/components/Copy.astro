@@ -1,0 +1,18 @@
+---
+import type { Lang } from '../config/languages'
+import { useTranslations } from '../i18n'
+
+/** A command with a copy button; the button captions come from the catalog through data attributes */
+interface Props {
+  lang: Lang
+  command: string
+}
+
+const { lang, command } = Astro.props
+const { t } = useTranslations(lang)
+---
+
+<span class="copy" data-copy-root>
+  <code data-copy-command>{command}</code>
+  <button type="button" data-copy-button data-copy={t('copy.copy')} data-copied={t('copy.copied')}>{t('copy.copy')}</button>
+</span>

@@ -1,0 +1,229 @@
+---
+import Lines from './Lines.astro'
+import Mark from './Mark.astro'
+import type { Lang } from '../config/languages'
+import { useTranslations, type Key } from '../i18n'
+
+interface Props {
+  lang: Lang
+}
+
+const { lang } = Astro.props
+const { t } = useTranslations(lang)
+
+/** The run, step by step; the limit step is drawn as a pause, not a failure */
+const steps: readonly { key: Key; kind: 'ok' | 'limit' }[] = [
+  { key: 'autopilot.s1', kind: 'ok' },
+  { key: 'autopilot.s2', kind: 'ok' },
+  { key: 'autopilot.s3', kind: 'ok' },
+  { key: 'autopilot.s4', kind: 'limit' },
+  { key: 'autopilot.s5', kind: 'ok' },
+  { key: 'autopilot.s6', kind: 'ok' },
+]
+---
+
+<section class="section autopilot">
+  <div class="autopilot-glow" aria-hidden="true"></div>
+  <div class="container autopilot-row">
+    <div class="section-head">
+      <p class="eyebrow" data-reveal>{t('autopilot.eyebrow')}</p>
+      <h2 class="section-title" data-reveal style="--reveal-i: 1"><Lines text={t('autopilot.title')} /></h2>
+      <p class="section-lead" data-reveal style="--reveal-i: 2"><Lines text={t('autopilot.lead')} /></p>
+    </div>
+
+    <div class="run" data-play data-reveal style="--reveal-i: 2" role="img" aria-label={t('autopilot.aria')}>
+      <div class="run-head" aria-hidden="true">
+        <Mark size={30} animated />
+        <span class="run-task">{t('autopilot.task')}</span>
+      </div>
+      <div class="run-progress" aria-hidden="true"><span></span></div>
+      <ol class="run-steps" aria-hidden="true">
+        {
+          steps.map((step, i) => (
+            <li class={`run-step run-step--${step.kind}`} style={`--i: ${i}`}>
+              <span class="run-dot" />
+              <span class="run-text">{t(step.key)}</span>
+            </li>
+          ))
+        }
+      </ol>
+    </div>
+  </div>
+</section>
+
+<style>
+  .autopilot {
+    overflow: hidden;
+  }
+
+  .autopilot-glow {
+    position: absolute;
+    inset: 10% -20% auto auto;
+    width: 760px;
+    height: 560px;
+    background: radial-gradient(closest-side, rgb(177 60 192 / 0.2), transparent 70%);
+    filter: blur(20px);
+    pointer-events: none;
+  }
+
+  .autopilot-row {
+    position: relative;
+    display: grid;
+    gap: 40px;
+    align-items: center;
+  }
+
+  @media (min-width: 1000px) {
+    .autopilot-row {
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+      gap: 64px;
+    }
+
+    .autopilot-row .section-head {
+      margin-bottom: 0;
+    }
+  }
+
+  .run {
+    --cycle: 12s;
+    border: 1px solid var(--border-strong);
+    border-radius: var(--radius-lg);
+    background: linear-gradient(180deg, rgb(24 24 27 / 0.94), rgb(15 15 19 / 0.94));
+    box-shadow:
+      0 30px 80px -30px rgb(0 0 0 / 0.8),
+      0 0 80px -30px var(--magenta-glow);
+    overflow: hidden;
+  }
+
+  .run-head {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 16px 18px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .run-task {
+    color: var(--fg);
+    font-size: 15px;
+    font-weight: 600;
+  }
+
+  .run-progress {
+    height: 3px;
+    background: var(--surface-3);
+  }
+
+  .run-progress span {
+    display: block;
+    width: 100%;
+    height: 100%;
+    background: var(--gradient);
+  }
+
+  .run-steps {
+    display: grid;
+    gap: 4px;
+    padding: 14px;
+  }
+
+  .run-step {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 10px 12px;
+    border-radius: 10px;
+    color: var(--fg);
+    font-family: var(--font-accent);
+    font-size: 14px;
+  }
+
+  .run-dot {
+    position: relative;
+    flex: none;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: rgb(74 222 128 / 0.18);
+    box-shadow: inset 0 0 0 2px var(--success);
+  }
+
+  .run-dot::after {
+    content: '✓';
+    position: absolute;
+    inset: 0;
+    display: grid;
+    place-items: center;
+    color: var(--success);
+    font-size: 11px;
+    font-weight: 700;
+  }
+
+  .run-step--limit .run-dot {
+    background: rgb(251 191 36 / 0.16);
+    box-shadow: inset 0 0 0 2px var(--warn);
+  }
+
+  .run-step--limit .run-dot::after {
+    content: '‖';
+    color: var(--warn);
+  }
+
+  .run-step--limit .run-text {
+    color: var(--warn);
+  }
+
+  /*
+   * The run loops while it is on screen: steps light up one by one, the limit pauses the bar, then the agent goes on
+   * Without motion the markup shows the finished run
+   */
+  @media (prefers-reduced-motion: no-preference) {
+    .run.is-playing .run-step {
+      animation: run-step var(--cycle) ease-out infinite backwards;
+      animation-delay: calc(var(--i) * 1.4s);
+    }
+
+    .run.is-playing .run-progress span {
+      animation: run-bar var(--cycle) linear infinite;
+    }
+  }
+
+  @keyframes run-step {
+    0% {
+      opacity: 0.25;
+      background: transparent;
+      transform: translateX(-6px);
+    }
+    4% {
+      opacity: 1;
+      background: rgb(63 199 194 / 0.1);
+      transform: none;
+    }
+    14%,
+    88% {
+      opacity: 1;
+      background: transparent;
+    }
+    100% {
+      opacity: 0.25;
+    }
+  }
+
+  @keyframes run-bar {
+    0% {
+      width: 0;
+    }
+    35%,
+    45% {
+      width: 55%;
+    }
+    70%,
+    96% {
+      width: 100%;
+    }
+    100% {
+      width: 0;
+    }
+  }
+</style>

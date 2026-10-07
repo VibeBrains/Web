@@ -1,0 +1,206 @@
+---
+import Mark from './Mark.astro'
+import { languages, langPaths, langTags, type Lang } from '../config/languages'
+import { links } from '../config/site'
+import { useTranslations, type Key } from '../i18n'
+
+interface Props {
+  lang: Lang
+}
+
+const { lang } = Astro.props
+const { t } = useTranslations(lang)
+
+const nav: readonly { href: string; key: Key }[] = [
+  { href: '#why', key: 'header.why' },
+  { href: '#features', key: 'header.features' },
+  { href: '#install', key: 'header.install' },
+]
+
+const langCodes: Record<Lang, { code: Key; name: Key }> = {
+  ru: { code: 'lang.ru.code', name: 'lang.ru.name' },
+  en: { code: 'lang.en.code', name: 'lang.en.name' },
+}
+---
+
+<header class="header">
+  <div class="container header-row">
+    <a class="logo" href={langPaths[lang]} aria-label={t('header.home')}>
+      <Mark size={30} animated />
+      <span class="logo-word" aria-hidden="true">{t('brand')}</span>
+    </a>
+
+    <nav class="nav" aria-label={t('header.nav')}>
+      {nav.map((item) => <a href={item.href}>{t(item.key)}</a>)}
+    </nav>
+
+    <div class="actions">
+      <div class="lang" role="group" aria-label={t('lang.label')}>
+        {
+          languages.map((code, i) => (
+            <>
+              {i > 0 && (
+                <span class="lang-sep" aria-hidden="true">
+                  |
+                </span>
+              )}
+              <a
+                class="lang-link"
+                href={langPaths[code]}
+                hreflang={langTags[code]}
+                lang={langTags[code]}
+                aria-label={t(langCodes[code].name)}
+                aria-current={code === lang ? 'true' : undefined}
+                data-lang-pick={code}
+              >
+                {t(langCodes[code].code)}
+              </a>
+            </>
+          ))
+        }
+      </div>
+      <a class="btn btn--ghost sign-in" href={links.github} rel="noopener">{t('header.github')}</a>
+      <a class="btn btn--primary start" href="#download">{t('header.download')}</a>
+    </div>
+  </div>
+</header>
+
+<style>
+  .header {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    border-bottom: 1px solid var(--border);
+    background: rgb(9 9 11 / 0.72);
+    backdrop-filter: saturate(160%) blur(14px);
+    -webkit-backdrop-filter: saturate(160%) blur(14px);
+  }
+
+  .header-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    height: var(--header-h);
+  }
+
+  .logo {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    margin-right: auto;
+    color: var(--fg);
+    border-radius: 8px;
+  }
+
+  .logo-word {
+    font-family: var(--font-accent);
+    font-size: 18px;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+  }
+
+  .logo:hover {
+    color: var(--brand-bright);
+  }
+
+  .nav {
+    display: none;
+    gap: 28px;
+    margin-right: 12px;
+  }
+
+  .nav a {
+    color: var(--fg-muted);
+    font-size: 15px;
+    font-weight: 500;
+  }
+
+  .nav a:hover {
+    color: var(--fg);
+  }
+
+  .actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .lang {
+    display: inline-flex;
+    align-items: center;
+    gap: 2px;
+    font-family: var(--font-accent);
+    font-size: 14px;
+  }
+
+  .lang-sep {
+    color: var(--fg-faint);
+  }
+
+  .lang-link {
+    display: inline-flex;
+    align-items: center;
+    min-width: 32px;
+    min-height: 40px;
+    justify-content: center;
+    color: var(--fg-muted);
+  }
+
+  .lang-link[aria-current='true'] {
+    color: var(--fg);
+    font-weight: 600;
+    text-decoration: underline;
+    text-decoration-color: var(--brand);
+    text-decoration-thickness: 2px;
+    text-underline-offset: 6px;
+  }
+
+  .lang-link:hover {
+    color: var(--fg);
+  }
+
+  .btn {
+    min-height: 40px;
+    padding: 8px 14px;
+    font-size: 15px;
+  }
+
+  .sign-in {
+    display: none;
+  }
+
+  @media (min-width: 640px) {
+    .sign-in {
+      display: inline-flex;
+    }
+  }
+
+  @media (min-width: 960px) {
+    .nav {
+      display: flex;
+    }
+  }
+
+  @media (max-width: 380px) {
+    .header-row {
+      gap: 8px;
+    }
+
+    .logo-word {
+      font-size: 16px;
+    }
+
+    .actions {
+      gap: 6px;
+    }
+
+    .btn {
+      padding-inline: 10px;
+      font-size: 14px;
+    }
+
+    .lang-link {
+      min-width: 26px;
+    }
+  }
+</style>

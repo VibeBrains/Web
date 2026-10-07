@@ -1,0 +1,226 @@
+---
+import Lines from './Lines.astro'
+import type { Lang } from '../config/languages'
+import { competitors, PROVIDERS_FILE } from '../config/site'
+import { useTranslations, type Key } from '../i18n'
+
+interface Props {
+  lang: Lang
+}
+
+const { lang } = Astro.props
+const { t } = useTranslations(lang)
+
+type Verdict = 'yes' | 'warn' | 'no' | 'plain'
+type Cell = { key: Key; verdict: Verdict } | { code: string; verdict: Verdict }
+
+/** Rows of the comparison: VibeIDE first, then Cursor, Windsurf and Copilot in the order of `competitors` */
+const rows: readonly { label: Key; cells: readonly Cell[] }[] = [
+  {
+    label: 'why.row.open',
+    cells: [
+      { key: 'why.row.open.own', verdict: 'yes' },
+      { key: 'why.row.open.other', verdict: 'no' },
+      { key: 'why.row.open.other', verdict: 'no' },
+      { key: 'why.row.open.other', verdict: 'no' },
+    ],
+  },
+  {
+    label: 'why.row.price',
+    cells: [
+      { key: 'why.row.price.own', verdict: 'yes' },
+      { key: 'why.row.price.cursor', verdict: 'no' },
+      { key: 'why.row.price.windsurf', verdict: 'no' },
+      { key: 'why.row.price.copilot', verdict: 'no' },
+    ],
+  },
+  {
+    label: 'why.row.key',
+    cells: [
+      { key: 'why.row.key.own', verdict: 'yes' },
+      { key: 'why.row.key.limited', verdict: 'warn' },
+      { key: 'why.row.key.limited', verdict: 'warn' },
+      { key: 'why.row.key.no', verdict: 'no' },
+    ],
+  },
+  {
+    label: 'why.row.custom',
+    cells: [
+      { code: PROVIDERS_FILE, verdict: 'yes' },
+      { key: 'why.row.custom.cursor', verdict: 'warn' },
+      { key: 'why.row.key.no', verdict: 'no' },
+      { key: 'why.row.key.no', verdict: 'no' },
+    ],
+  },
+  {
+    label: 'why.row.local',
+    cells: [
+      { key: 'why.row.local.own', verdict: 'yes' },
+      { key: 'why.row.local.cursor', verdict: 'warn' },
+      { key: 'why.row.key.no', verdict: 'no' },
+      { key: 'why.row.key.no', verdict: 'no' },
+    ],
+  },
+  {
+    label: 'why.row.telemetry',
+    cells: [
+      { key: 'why.row.telemetry.own', verdict: 'yes' },
+      { key: 'why.row.telemetry.other', verdict: 'no' },
+      { key: 'why.row.telemetry.other', verdict: 'no' },
+      { key: 'why.row.telemetry.other', verdict: 'no' },
+    ],
+  },
+  {
+    label: 'why.row.agents',
+    cells: [
+      { key: 'why.row.agents.own', verdict: 'yes' },
+      { key: 'why.row.agents.cursor', verdict: 'warn' },
+      { key: 'why.row.key.no', verdict: 'no' },
+      { key: 'why.row.key.no', verdict: 'no' },
+    ],
+  },
+  {
+    label: 'why.row.market',
+    cells: [
+      { key: 'why.row.market.own', verdict: 'yes' },
+      { key: 'why.row.market.other', verdict: 'plain' },
+      { key: 'why.row.market.other', verdict: 'plain' },
+      { key: 'why.row.market.other', verdict: 'plain' },
+    ],
+  },
+]
+---
+
+<section class="section" id="why">
+  <div class="container">
+    <div class="section-head section-head--center">
+      <p class="eyebrow" data-reveal>{t('why.eyebrow')}</p>
+      <h2 class="section-title" data-reveal style="--reveal-i: 1">{t('why.title')}</h2>
+      <p class="section-lead" data-reveal style="--reveal-i: 2"><Lines text={t('why.lead')} /></p>
+    </div>
+
+    <div class="table-wrap" data-reveal style="--reveal-i: 3">
+      <table class="compare">
+        <thead>
+          <tr>
+            <th scope="col"><span class="visually-hidden">{t('why.criterion')}</span></th>
+            <th scope="col" class="own">{t('brand')}</th>
+            {competitors.map((name) => <th scope="col">{name}</th>)}
+          </tr>
+        </thead>
+        <tbody>
+          {
+            rows.map((row) => (
+              <tr>
+                <th scope="row">{t(row.label)}</th>
+                {row.cells.map((cell, i) => (
+                  <td class:list={[`v-${cell.verdict}`, { own: i === 0 }]}>
+                    {'code' in cell ? <code>{cell.code}</code> : t(cell.key)}
+                  </td>
+                ))}
+              </tr>
+            ))
+          }
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<style>
+  .table-wrap {
+    overflow-x: auto;
+    border: 1px solid var(--border-strong);
+    border-radius: var(--radius-lg);
+    background: var(--surface);
+  }
+
+  .compare {
+    width: 100%;
+    min-width: 720px;
+    border-collapse: collapse;
+    font-size: 15px;
+  }
+
+  th,
+  td {
+    padding: 14px 18px;
+    border-bottom: 1px solid var(--border);
+    text-align: left;
+    vertical-align: middle;
+  }
+
+  tbody tr:last-child th,
+  tbody tr:last-child td {
+    border-bottom: 0;
+  }
+
+  thead th {
+    color: var(--fg-muted);
+    font-family: var(--font-accent);
+    font-size: 13px;
+    font-weight: 500;
+  }
+
+  thead th.own {
+    color: var(--fg);
+    font-weight: 700;
+  }
+
+  tbody th {
+    color: var(--fg);
+    font-weight: 500;
+  }
+
+  td {
+    color: var(--fg-muted);
+  }
+
+  td.own {
+    background: linear-gradient(180deg, rgb(63 199 194 / 0.1), rgb(177 60 192 / 0.08));
+    color: var(--fg);
+    font-weight: 600;
+  }
+
+  td::before {
+    display: inline-grid;
+    place-items: center;
+    width: 18px;
+    height: 18px;
+    margin-right: 8px;
+    border-radius: 50%;
+    font-size: 11px;
+    font-weight: 700;
+    vertical-align: -3px;
+  }
+
+  td.v-yes::before {
+    content: '✓';
+    background: rgb(74 222 128 / 0.16);
+    color: var(--success);
+  }
+
+  td.v-warn::before {
+    content: '~';
+    background: rgb(251 191 36 / 0.16);
+    color: var(--warn);
+  }
+
+  td.v-no::before {
+    content: '✕';
+    background: rgb(248 113 113 / 0.14);
+    color: var(--danger);
+  }
+
+  tbody tr {
+    transition: background-color 0.2s;
+  }
+
+  tbody tr:hover {
+    background: rgb(255 255 255 / 0.025);
+  }
+
+  td code {
+    color: var(--brand-bright);
+  }
+</style>

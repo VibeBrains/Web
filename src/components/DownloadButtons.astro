@@ -1,0 +1,84 @@
+---
+import type { Lang } from '../config/languages'
+import { links } from '../config/site'
+import { buildReleases } from '../config/build'
+import { newestBuild, type Os } from '../config/releases'
+import { useTranslations, type Key } from '../i18n'
+
+/**
+ * The two download buttons, filled with the newest build of each platform as of the build
+ * The browser refreshes them from GitHub, so a release made after the deploy is offered too
+ */
+interface Props {
+  lang: Lang
+}
+
+const { lang } = Astro.props
+const { t } = useTranslations(lang)
+
+const buttons: readonly { os: Os; title: Key; sub: Key; primary: boolean }[] = [
+  { os: 'windows', title: 'download.windows', sub: 'download.windows.sub', primary: true },
+  { os: 'macos', title: 'download.macos', sub: 'download.macos.sub', primary: false },
+]
+
+const view = buttons.map((button) => {
+  const build = newestBuild(buildReleases, button.os)
+  return {
+    ...button,
+    href: build?.url ?? links.releases,
+    subText: build ? t(button.sub, { version: build.version, size: build.sizeMb }) : t('download.fallback'),
+    template: t(button.sub),
+  }
+})
+---
+
+<div class="downloads">
+  {
+    view.map((button) => (
+      <a
+        class:list={['btn', 'btn--lg', 'download', button.primary ? 'btn--primary' : 'btn--ghost']}
+        href={button.href}
+        data-dl={button.os}
+        rel="noopener"
+      >
+        <span class="download-title">{t(button.title)}</span>
+        <span class="download-sub" data-dl-sub={button.os} data-template={button.template}>
+          {button.subText}
+        </span>
+      </a>
+    ))
+  }
+</div>
+
+<style>
+  .downloads {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+
+  .download {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 2px;
+    min-width: 236px;
+    white-space: normal;
+  }
+
+  .download-title {
+    font-size: 17px;
+  }
+
+  .download-sub {
+    color: rgb(255 255 255 / 0.72);
+    font-family: var(--font-accent);
+    font-size: 12px;
+    font-weight: 500;
+  }
+
+  @media (max-width: 520px) {
+    .download {
+      width: 100%;
+    }
+  }
+</style>

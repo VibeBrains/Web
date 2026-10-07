@@ -1,4 +1,6 @@
-.DS_Store
 node_modules/
-# Реальные адреса и пользователи сервера — только локально.
+dist/
+.astro/
+.DS_Store
+*.log
 .env

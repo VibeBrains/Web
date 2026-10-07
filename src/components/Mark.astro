@@ -1,0 +1,87 @@
+---
+/**
+ * VibeIDE mark: a brain of two halves, teal and magenta, with circuit branches ending in nodes
+ * Drawn after the product icon, so the page needs no image for it
+ */
+interface Props {
+  size?: number
+  animated?: boolean
+}
+
+const { size = 32, animated = false } = Astro.props
+---
+
+<svg class:list={['mark', { 'mark--animated': animated }]} width={size} height={size} viewBox="-80 -80 160 160" aria-hidden="true">
+  <path class="half half--left" d="M-5 -66C-34 -76-68-56-66-26-86-12-82 20-62 31-66 57-37 75-5 66Z" />
+  <path class="half half--right" d="M5 -66C34 -76 68-56 66-26 86-12 82 20 62 31 66 57 37 75 5 66Z" />
+  <g class="circuit">
+    <path d="M-16-44-32-28M-16 0H-42M-16 32-32 48M16-44 32-28M16 0H42M16 32 32 48" />
+  </g>
+  <g class="nodes">
+    <circle cx="-35" cy="-25" r="6" /><circle cx="-46" cy="0" r="6" /><circle cx="-35" cy="51" r="6" />
+    <circle cx="35" cy="-25" r="6" /><circle cx="46" cy="0" r="6" /><circle cx="35" cy="51" r="6" />
+  </g>
+</svg>
+
+<style>
+  .half--left {
+    fill: var(--teal);
+  }
+
+  .half--right {
+    fill: var(--magenta);
+  }
+
+  .circuit path {
+    fill: none;
+    stroke: var(--bg);
+    stroke-width: 7;
+    stroke-linecap: round;
+  }
+
+  .nodes circle {
+    fill: none;
+    stroke: var(--bg);
+    stroke-width: 5;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .mark--animated .nodes circle {
+      animation: node-pulse 2.8s ease-in-out infinite;
+      transform-box: fill-box;
+      transform-origin: center;
+    }
+
+    .mark--animated .nodes circle:nth-child(2) {
+      animation-delay: 0.4s;
+    }
+
+    .mark--animated .nodes circle:nth-child(3) {
+      animation-delay: 0.8s;
+    }
+
+    .mark--animated .nodes circle:nth-child(4) {
+      animation-delay: 1.2s;
+    }
+
+    .mark--animated .nodes circle:nth-child(5) {
+      animation-delay: 1.6s;
+    }
+
+    .mark--animated .nodes circle:nth-child(6) {
+      animation-delay: 2s;
+    }
+  }
+
+  @keyframes node-pulse {
+    0%,
+    100% {
+      stroke: var(--bg);
+      transform: scale(1);
+    }
+    50% {
+      stroke: #fff;
+      transform: scale(1.35);
+    }
+  }
+</style>

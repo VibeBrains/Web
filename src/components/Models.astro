@@ -1,0 +1,171 @@
+---
+import Lines from './Lines.astro'
+import Mark from './Mark.astro'
+import type { Lang } from '../config/languages'
+import { PROVIDERS_FILE, PROVIDERS_SNIPPET } from '../config/site'
+import { providers } from '../config/providers'
+import { useTranslations } from '../i18n'
+
+interface Props {
+  lang: Lang
+}
+
+const { lang } = Astro.props
+const { t, lines } = useTranslations(lang)
+
+// The first sentence names the file: the placeholder marks where the code element stands
+const [fileLine = '', ...restLines] = lines('models.lead')
+const fileParts = fileLine.split(/(\{file\})/)
+---
+
+<section class="section models" id="models">
+  <div class="container models-row">
+    <div class="models-copy">
+      <div class="section-head">
+        <p class="eyebrow" data-reveal>{t('models.eyebrow')}</p>
+        <h2 class="section-title" data-reveal style="--reveal-i: 1"><Lines text={t('models.title')} /></h2>
+        <p class="section-lead" data-reveal style="--reveal-i: 2">
+          <span class="ln" data-joined>
+            {fileParts.map((part) => (part === '{file}' ? <code>{PROVIDERS_FILE}</code> : part))}
+          </span>
+          {restLines.map((line) => <span class="ln">{line}</span>)}
+        </p>
+      </div>
+      <figure class="snippet" data-reveal style="--reveal-i: 3">
+        <figcaption>{t('models.snippet')}</figcaption>
+        <pre><code>{PROVIDERS_SNIPPET}</code></pre>
+      </figure>
+    </div>
+
+    <div class="sphere-wrap" data-reveal style="--reveal-i: 1">
+      <div class="sphere" data-sphere data-play role="img" aria-label={t('models.sphere')}>
+        <canvas class="sphere-canvas" aria-hidden="true"></canvas>
+        <span class="sphere-core" aria-hidden="true"><Mark size={72} animated /></span>
+        <ul class="orbit" aria-hidden="true">
+          {providers.map((name) => <li class="orbit-item">{name}</li>)}
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .models {
+    overflow: hidden;
+  }
+
+  .models-row {
+    display: grid;
+    gap: 40px;
+    align-items: center;
+  }
+
+  @media (min-width: 1000px) {
+    .models-row {
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+      gap: 56px;
+    }
+  }
+
+  .models-copy {
+    min-width: 0;
+  }
+
+  .models-copy .section-head {
+    margin-bottom: 28px;
+  }
+
+  .models-copy .section-title {
+    font-size: clamp(28px, 3.4vw, 40px);
+  }
+
+  .section-lead code {
+    color: var(--brand-bright);
+  }
+
+  .snippet {
+    border: 1px solid var(--border-strong);
+    border-radius: var(--radius-lg);
+    background: var(--surface);
+    overflow: hidden;
+  }
+
+  .snippet figcaption {
+    padding: 10px 16px;
+    border-bottom: 1px solid var(--border);
+    color: var(--fg-faint);
+    font-family: var(--font-accent);
+    font-size: 12px;
+  }
+
+  .snippet pre {
+    margin: 0;
+    padding: 16px;
+    overflow-x: auto;
+    color: var(--brand-bright);
+    font-size: 13px;
+    line-height: 1.6;
+  }
+
+  .sphere-wrap {
+    display: grid;
+    place-items: center;
+    min-width: 0;
+  }
+
+  .sphere {
+    position: relative;
+    width: min(100%, 520px);
+    aspect-ratio: 1;
+  }
+
+  .sphere-canvas {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+  }
+
+  .sphere-core {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    translate: -50% -50%;
+    filter: drop-shadow(0 0 28px rgb(63 199 194 / 0.5)) drop-shadow(0 0 40px rgb(177 60 192 / 0.35));
+  }
+
+  /* Without scripts the providers wrap as a cloud of tags; the script places each one on the sphere */
+  .orbit {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-wrap: wrap;
+    align-content: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 12%;
+  }
+
+  .orbit-item {
+    padding: 4px 10px;
+    border: 1px solid var(--border-strong);
+    border-radius: 999px;
+    background: rgb(19 19 23 / 0.85);
+    color: var(--fg);
+    font-family: var(--font-accent);
+    font-size: 12px;
+    white-space: nowrap;
+  }
+
+  .sphere.is-ready .orbit {
+    display: block;
+    padding: 0;
+  }
+
+  .sphere.is-ready .orbit-item {
+    position: absolute;
+    left: 0;
+    top: 0;
+    will-change: transform, opacity;
+  }
+</style>
