@@ -10,6 +10,7 @@
         "@fontsource/anton": "^5.3.0",
         "@fontsource/ibm-plex-serif": "^5.3.0",
         "@fontsource/oswald": "^5.3.0",
+        "@vibebrains/site-kit": "github:VibeBrains/SiteKit#v0.1.0",
         "astro": "^7.3.5",
       },
       "devDependencies": {
@@ -303,6 +304,8 @@
     "@types/unist": ["@types/unist@3.0.3", "", {}, "sha512-ko/gIFJRv177XgZsZcBwnqJN5x/Gien8qNOn0D5bQU/zAzVf9Zt3BlcUiLqhV9y4ARk0GbT3tnUiPNgnTXzc/Q=="],
 
     "@ungap/structured-clone": ["@ungap/structured-clone@1.4.0", "", {}, "sha512-1mEZtMKPM09vDmQt5y7YvmN2+DFTP7Tg0EWXdic8/C6VRnpb33e4ghisCIE3WZjsE2N8mf+QV1Zqh7ZFYLWInQ=="],
+
+    "@vibebrains/site-kit": ["@vibebrains/site-kit@github:VibeBrains/SiteKit#849d6af", { "peerDependencies": { "astro": ">=7" }, "bin": { "site-deploy": "./bin/siteDeploy.sh" } }, "VibeBrains-SiteKit-849d6af", "sha512-utxIsN6sXmxlmzmd+xRePHCkkDDkFh5IrCeG0a5Pt8B4ChvsU0HD03IVKHpDMjpsptGhEjqpNsDYwE0rnz2Zxg=="],
 
     "@volar/kit": ["@volar/kit@2.4.28", "", { "dependencies": { "@volar/language-service": "2.4.28", "@volar/typescript": "2.4.28", "typesafe-path": "^0.2.2", "vscode-languageserver-textdocument": "^1.0.11", "vscode-uri": "^3.0.8" }, "peerDependencies": { "typescript": "*" } }, "sha512-cKX4vK9dtZvDRaAzeoUdaAJEew6IdxHNCRrdp5Kvcl6zZOqb6jTOfk3kXkIkG3T7oTFXguEMt5+9ptyqYR84Pg=="],
 

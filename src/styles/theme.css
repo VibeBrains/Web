@@ -1,0 +1,108 @@
+/* Fonts are the cabinet's (Inter, IBM Plex Serif 700, Fira Code), served from the site itself: no font CDN */
+@import '@fontsource-variable/inter';
+@import '@fontsource/ibm-plex-serif/700.css';
+@import '@fontsource/anton/400.css';
+/* Anton has no Cyrillic: Russian letters of the dense line fall to Oswald, the closest heavy condensed face that has it */
+@import '@fontsource/oswald/700.css';
+@import '@fontsource-variable/fira-code';
+
+/*
+ * Theme of vibeide.ru over the family kit (@vibebrains/site-kit/styles/base.css)
+ * Same family as vibememory.ru: zinc surfaces, the same fonts, spacing and motion rules
+ * The accent is VibeIDE's own: the two halves of its brain mark, teal and magenta
+ * The landing is dark only: the product lives next to terminals and editors, and the glow effects need a dark field
+ */
+:root {
+  color-scheme: dark;
+
+  --bg: #09090b;
+  --bg-soft: #0f0f13;
+  --surface: #131317;
+  --surface-2: #18181b;
+  --surface-3: #232329;
+  --border: rgb(255 255 255 / 0.08);
+  --border-strong: rgb(255 255 255 / 0.16);
+
+  --fg: #f4f4f5;
+  --fg-soft: #d4d4d8;
+  --fg-muted: #a1a1aa;
+  --fg-faint: #71717a;
+
+  --brand: #12807c;
+  --brand-hover: #159a95;
+  --brand-bright: #5fe0da;
+  --brand-ink: #ecfeff;
+  --brand-glow: rgb(63 199 194 / 0.35);
+  --brand-soft: rgb(63 199 194 / 0.12);
+  --magenta: #b13cc0;
+  --magenta-bright: #e07cf0;
+  --magenta-glow: rgb(177 60 192 / 0.35);
+  --teal: #3fc7c2;
+  --gradient: linear-gradient(120deg, var(--teal), var(--magenta));
+  --gradient-deep: linear-gradient(120deg, #12807c, #8a2a9c);
+  --success: #4ade80;
+  --warn: #fbbf24;
+  --danger: #f87171;
+
+  --font-body: 'Inter Variable', 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-title: 'IBM Plex Serif', Georgia, serif;
+  --font-fused: 'Anton', 'Oswald', Impact, 'Arial Narrow', sans-serif;
+  --font-accent: 'Fira Code Variable', 'Fira Code', ui-monospace, 'SF Mono', Menlo, monospace;
+
+  --radius: 10px;
+  --radius-lg: 18px;
+  --container: 1160px;
+  --gutter: 20px;
+  --header-h: 64px;
+  --section-y: 112px;
+
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+
+  --btn-primary-bg: var(--gradient-deep);
+  --btn-primary-hover: linear-gradient(120deg, #159a95, #a032b4);
+  --family-here-border: rgb(63 199 194 / 0.4);
+  --family-here-tint: linear-gradient(180deg, rgb(63 199 194 / 0.08), rgb(177 60 192 / 0.06));
+}
+
+@media (max-width: 640px) {
+  :root {
+    --gutter: 16px;
+    --section-y: 72px;
+  }
+}
+
+/* Copyable command: a click copies it, the caption comes from the catalog through data attributes */
+.copy {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  max-width: 100%;
+  padding: 8px 8px 8px 14px;
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius);
+  background: rgb(255 255 255 / 0.03);
+  color: var(--fg);
+  font-family: var(--font-accent);
+  font-size: 14px;
+}
+
+.copy code {
+  overflow-x: auto;
+  white-space: nowrap;
+}
+
+.copy button {
+  flex: none;
+  padding: 6px 10px;
+  border: 0;
+  border-radius: 7px;
+  background: var(--brand-soft);
+  color: var(--brand-bright);
+  font: inherit;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.copy button:hover {
+  background: rgb(63 199 194 / 0.22);
+}

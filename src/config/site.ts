@@ -20,21 +20,6 @@ export const WINGET_COMMAND = 'winget install VibeBrains.VibeIDE'
 /** localStorage key that remembers the language the visitor picked explicitly */
 export const LANG_STORAGE_KEY = 'vibeide.lang'
 
-/** Sibling products of the family section: product names, the same in every language */
-export const siblings = { vibeidea: 'VibeIDEA', vibememory: 'VibeMemory' } as const
-
-/**
- * App icons of the family, copied as they ship — a redrawn mark drifts from the real one:
- * VibeIDE's from resources/darwin/code.icns of its repository
- * VibeIDEA's from vibeidea-customization/resources/vibeidea.svg of its repository
- * VibeMemory's from public/favicon.svg of vibememory.ru
- */
-export const brandIcons = {
-  vibeide: '/brands/vibeide.png',
-  vibeidea: '/brands/vibeidea.svg',
-  vibememory: '/brands/vibememory.svg',
-} as const
-
 /** Competitors of the comparison table: product names, the same in every language */
 export const competitors = ['Cursor', 'Windsurf', 'Copilot'] as const
 

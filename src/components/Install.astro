@@ -1,10 +1,11 @@
 ---
-import Lines from './Lines.astro'
+import Lines from '@vibebrains/site-kit/components/Lines.astro'
 import Copy from './Copy.astro'
-import { langTags, type Lang } from '../config/languages'
+import { langTags, type Lang } from '@vibebrains/site-kit/languages'
 import { links, WINGET_COMMAND } from '../config/site'
 import { buildReleases } from '../config/build'
-import { kindOf, toMb, type AssetKind } from '../config/releases'
+import { kindOf, toMb } from '@vibebrains/site-kit/releases'
+import { KINDS, RELEASES_SHOWN, type AssetKind } from '../config/releases'
 import { useTranslations, type Key } from '../i18n'
 
 interface Props {
@@ -13,8 +14,6 @@ interface Props {
 
 const { lang } = Astro.props
 const { t } = useTranslations(lang)
-
-const RELEASES_SHOWN = 3
 
 const steps: readonly { title: Key; text: Key }[] = [
   { title: 'install.s1.title', text: 'install.s1.text' },
@@ -35,7 +34,7 @@ const dateOf = (iso: string) =>
 const shown = buildReleases.slice(0, RELEASES_SHOWN).map((release) => ({
   title: t('releases.item', { version: release.tag_name, date: dateOf(release.published_at) }),
   assets: release.assets.flatMap((asset) => {
-    const kind = kindOf(asset.name)
+    const kind = kindOf(asset.name, KINDS)
     return kind === undefined
       ? []
       : [{ href: asset.browser_download_url, label: t(kindKeys[kind]), size: t('releases.size', { size: toMb(asset.size) }) }]

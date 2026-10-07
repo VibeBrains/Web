@@ -1,4 +1,4 @@
-import { motionAllowed } from './motion'
+import { motionAllowed } from '@vibebrains/site-kit/scripts/motion'
 
 /** Points of the network sphere and how close two must be to be linked */
 const POINTS = 150

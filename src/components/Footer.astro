@@ -1,8 +1,9 @@
 ---
+import KitFooter from '@vibebrains/site-kit/components/Footer.astro'
 import Mark from './Mark.astro'
-import { languages, langPaths, langTags, type Lang } from '../config/languages'
+import type { Lang } from '@vibebrains/site-kit/languages'
 import { links } from '../config/site'
-import { useTranslations, type Key } from '../i18n'
+import { useTranslations } from '../i18n'
 
 interface Props {
   lang: Lang
@@ -10,142 +11,26 @@ interface Props {
 
 const { lang } = Astro.props
 const { t } = useTranslations(lang)
-const year = new Date().getFullYear()
-
-const footerLinks: readonly { href: string; key: Key }[] = [
-  { href: links.github, key: 'footer.repo' },
-  { href: links.releases, key: 'footer.releases' },
-  { href: links.issues, key: 'footer.issues' },
-  { href: links.functional, key: 'footer.functional' },
-]
-
-const langNames: Record<Lang, Key> = { ru: 'lang.ru.name', en: 'lang.en.name' }
 ---
 
-<footer class="footer">
-  <div class="container footer-row">
-    <div class="brand">
-      <a class="logo" href={langPaths[lang]} aria-label={t('header.home')}>
-        <Mark size={28} />
-        <span aria-hidden="true">{t('brand')}</span>
-      </a>
-      <p class="tagline">{t('footer.tagline')}</p>
-    </div>
-    <nav aria-label={t('footer.nav')}>
-      <ul class="links">
-        {
-          footerLinks.map((link) => (
-            <li>
-              <a href={link.href} rel="noopener">{t(link.key)}</a>
-            </li>
-          ))
-        }
-      </ul>
-    </nav>
-    <div class="bottom">
-      <p>{t('footer.copyright', { year })}</p>
-      <ul class="langs" aria-label={t('lang.label')}>
-        {
-          languages.map((code) => (
-            <li>
-              <a
-                href={langPaths[code]}
-                hreflang={langTags[code]}
-                lang={langTags[code]}
-                aria-current={code === lang ? 'true' : undefined}
-                data-lang-pick={code}
-              >
-                {t(langNames[code])}
-              </a>
-            </li>
-          ))
-        }
-      </ul>
-    </div>
-  </div>
-</footer>
-
-<style>
-  .footer {
-    padding-block: 48px 32px;
-    border-top: 1px solid var(--border);
-    background: var(--bg-soft);
-  }
-
-  .footer-row {
-    display: grid;
-    gap: 28px;
-  }
-
-  @media (min-width: 800px) {
-    .footer-row {
-      grid-template-columns: 1fr auto;
-      align-items: start;
-    }
-
-    .bottom {
-      grid-column: 1 / -1;
-    }
-  }
-
-  .brand {
-    display: grid;
-    gap: 10px;
-  }
-
-  .logo {
-    display: inline-flex;
-    align-items: center;
-    gap: 10px;
-    justify-self: start;
-    color: var(--fg);
-    font-family: var(--font-accent);
-    font-size: 17px;
-    font-weight: 700;
-  }
-
-  .tagline {
-    color: var(--fg-muted);
-    font-size: 15px;
-  }
-
-  .links {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px 24px;
-  }
-
-  .links a,
-  .langs a {
-    display: inline-flex;
-    min-height: 32px;
-    align-items: center;
-    color: var(--fg-muted);
-    font-size: 15px;
-  }
-
-  .links a:hover,
-  .langs a:hover {
-    color: var(--fg);
-  }
-
-  .langs a[aria-current='true'] {
-    color: var(--fg);
-  }
-
-  .bottom {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: space-between;
-    gap: 12px;
-    padding-top: 20px;
-    border-top: 1px solid var(--border);
-    color: var(--fg-faint);
-    font-size: 14px;
-  }
-
-  .langs {
-    display: flex;
-    gap: 16px;
-  }
-</style>
+<KitFooter
+  lang={lang}
+  brand={t('brand')}
+  homeLabel={t('header.home')}
+  tagline={t('footer.tagline')}
+  navLabel={t('footer.nav')}
+  links={[
+    { href: links.github, rel: 'noopener', label: t('footer.repo') },
+    { href: links.releases, rel: 'noopener', label: t('footer.releases') },
+    { href: links.issues, rel: 'noopener', label: t('footer.issues') },
+    { href: links.functional, rel: 'noopener', label: t('footer.functional') },
+  ]}
+  copyright={t('footer.copyright', { year: new Date().getFullYear() })}
+  langLabel={t('lang.label')}
+  langNames={{
+    ru: { code: t('lang.ru.code'), name: t('lang.ru.name') },
+    en: { code: t('lang.en.code'), name: t('lang.en.name') },
+  }}
+>
+  <Mark slot="logo" size={28} />
+</KitFooter>
