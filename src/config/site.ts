@@ -10,7 +10,7 @@ export const links = {
   issues: `${GITHUB}/issues`,
   functional: `${GITHUB}/blob/main/docs/functional.md`,
   firstRun: `${GITHUB}/blob/main/docs/manuals/firstRun.md`,
-  vibeidea: 'https://github.com/VibeBrains/VibeIDEA',
+  vibeidea: 'https://vibeidea.ru',
   vibememory: 'https://vibememory.ru',
 } as const
 
