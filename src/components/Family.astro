@@ -1,8 +1,7 @@
 ---
 import Lines from './Lines.astro'
-import Mark from './Mark.astro'
 import type { Lang } from '../config/languages'
-import { links, siblings } from '../config/site'
+import { brandIcons, links, siblings } from '../config/site'
 import { useTranslations } from '../i18n'
 
 interface Props {
@@ -25,7 +24,9 @@ const { t } = useTranslations(lang)
       <div class="product product--here" data-reveal style="--reveal-i: 0">
         <div class="product-inner" data-tilt-card>
           <span class="badge">{t('family.here')}</span>
-          <span class="product-mark"><Mark size={56} animated /></span>
+          <span class="product-mark" aria-hidden="true">
+            <img src={brandIcons.vibeide} alt="" width="56" height="56" />
+          </span>
           <h3>{t('brand')}</h3>
           <p>{t('family.vibeide')}</p>
         </div>
@@ -34,12 +35,7 @@ const { t } = useTranslations(lang)
       <a class="product" href={links.vibeidea} rel="noopener" data-reveal style="--reveal-i: 1">
         <span class="product-inner" data-tilt-card>
           <span class="product-mark" aria-hidden="true">
-            <svg width="56" height="56" viewBox="-80 -80 160 160">
-              <rect x="-80" y="-80" width="160" height="160" rx="34" fill="#18181b" />
-              <path d="M-14-42-50 0-14 42" fill="none" stroke="#b13cc0" stroke-width="16" stroke-linecap="round" stroke-linejoin="round" />
-              <path d="M14-42 50 0 14 42" fill="none" stroke="#ff8a3d" stroke-width="16" stroke-linecap="round" stroke-linejoin="round" />
-              <circle r="9" fill="#f4f4f5" />
-            </svg>
+            <img src={brandIcons.vibeidea} alt="" width="56" height="56" />
           </span>
           <span class="product-name">{siblings.vibeidea}</span>
           <span class="product-text">{t('family.vibeidea')}</span>
@@ -50,15 +46,7 @@ const { t } = useTranslations(lang)
       <a class="product" href={links.vibememory} rel="noopener" data-reveal style="--reveal-i: 2">
         <span class="product-inner" data-tilt-card>
           <span class="product-mark" aria-hidden="true">
-            <svg width="56" height="56" viewBox="0 0 32 32">
-              <rect width="32" height="32" rx="7" fill="#2e5be4" />
-              <g fill="none" stroke="#eff6ff" stroke-width="4" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M24 24V8l-8 10" stroke-opacity=".5" />
-                <path d="M8 24V8l8 10" />
-              </g>
-              <circle cx="16" cy="21" r="5.5" fill="#2e5be4" />
-              <circle cx="16" cy="21" r="4.5" fill="#eff6ff" />
-            </svg>
+            <img src={brandIcons.vibememory} alt="" width="56" height="56" />
           </span>
           <span class="product-name">{siblings.vibememory}</span>
           <span class="product-text">{t('family.vibememory')}</span>
