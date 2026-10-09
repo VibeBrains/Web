@@ -1,7 +1,7 @@
 {
   "brand": "VibeIDE",
   "meta.title": "VibeIDE — an open AI code editor with no subscription",
-  "meta.description": "A VS Code fork with AI inside the editor: any model, an agent with autopilot, no subscription and no telemetry, MIT source",
+  "meta.description": "A VS Code fork with AI inside the editor: any model, an agent with autopilot, no subscription and no telemetry, AGPL-3.0 source",
   "a11y.skip": "Skip to content",
 
   "header.home": "VibeIDE — home",
@@ -18,7 +18,7 @@
   "lang.en.code": "en",
   "lang.en.name": "English",
 
-  "hero.eyebrow": "VS Code fork · MIT source",
+  "hero.eyebrow": "VS Code fork · AGPL-3.0 source",
   "hero.title": "AI inside the editor",
   "hero.titleAccent": "not bolted on top",
   "hero.lead": "No subscription and no telemetry\nYour keys and your models, local ones included\nEverything the agent sees and does stays under your control",
@@ -66,7 +66,7 @@
   "why.lead": "The same jobs done with no monthly fee\nAnd without sending your code to the editor vendor",
   "why.criterion": "Criterion",
   "why.row.open": "Open source",
-  "why.row.open.own": "MIT",
+  "why.row.open.own": "AGPL-3.0",
   "why.row.open.other": "closed",
   "why.row.price": "Subscription",
   "why.row.price.own": "not needed",
@@ -172,7 +172,7 @@
   "cta.lead": "Open source, no subscription, the vendor never sees your code\nOne installer, and then it is just you, your project and your models",
   "cta.source": "Source code on GitHub",
 
-  "footer.tagline": "An open AI code editor · MIT license",
+  "footer.tagline": "An open AI code editor · AGPL-3.0 license",
   "footer.nav": "Links",
   "footer.repo": "Repository",
   "footer.releases": "Releases",
