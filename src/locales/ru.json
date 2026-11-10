@@ -178,5 +178,7 @@
   "footer.releases": "Релизы",
   "footer.issues": "Сообщить о проблеме",
   "footer.functional": "Полный каталог возможностей",
-  "footer.copyright": "© {year} VibeBrains"
+  "footer.copyright": "© {year} VibeBrains",
+  "footer.madeBy": "Сделано в",
+  "footer.madeBySite": "borodatych.ru"
 }

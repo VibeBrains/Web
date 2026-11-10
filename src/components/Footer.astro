@@ -26,6 +26,7 @@ const { t } = useTranslations(lang)
     { href: links.functional, rel: 'noopener', label: t('footer.functional') },
   ]}
   copyright={t('footer.copyright', { year: new Date().getFullYear() })}
+  madeBy={{ label: t('footer.madeBy'), site: t('footer.madeBySite'), href: links.author }}
   langLabel={t('lang.label')}
   langNames={{
     ru: { code: t('lang.ru.code'), name: t('lang.ru.name') },

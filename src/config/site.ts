@@ -5,6 +5,7 @@ const GITHUB = `https://github.com/${REPO}`
 
 /** Outbound links of the landing, one source for header, sections and footer */
 export const links = {
+  author: 'https://borodatych.ru',
   github: GITHUB,
   releases: `${GITHUB}/releases`,
   issues: `${GITHUB}/issues`,
